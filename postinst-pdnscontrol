@@ -1,0 +1,3 @@
+#!/bin/sh
+id pdnscontrol 2>/dev/null || useradd --home /opt/pdnscontrol --system pdnscontrol
+chown -R pdnscontrol /opt/pdnscontrol/instance

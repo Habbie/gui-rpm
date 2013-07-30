@@ -1,0 +1,3 @@
+#!/bin/sh
+id graphite 2>/dev/null || useradd --home /opt/graphite --system graphite
+chown -R graphite /opt/graphite/storage
