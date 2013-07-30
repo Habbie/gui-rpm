@@ -1,0 +1,2 @@
+- don't package .git
+- init scripts (including initdb tasks)
