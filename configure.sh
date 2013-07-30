@@ -1,4 +1,5 @@
 #!/bin/sh -ex
+ntpdate ntp.xs4all.nl
 yum install -y pycairo postgresql-server postgresql-libs screen
 rpm -i --nodeps *.rpm
 service postgresql initdb
