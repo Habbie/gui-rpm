@@ -22,7 +22,7 @@ DATABASE_URI = 'postgresql://pdnscontrol@/pdnscontrol'
 GRAPHITE_SERVER = 'http://172.16.68.167:8085/render/'
 
 serverlist_url = 'http://127.0.0.1:5000/servers.json'
-pdnscontrol_user = 'graphite'
+pdnscontrol_user = 'graphite@example.org'
 pdnscontrol_pass = 'notsecure'
 __EOF__
 
