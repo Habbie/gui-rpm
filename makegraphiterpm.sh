@@ -20,4 +20,4 @@ cp storage-schemas.conf.example storage-schemas.conf
 rm /opt/graphite/lib/python2.6/no-global-site-packages.txt
 
 popd
-fpm -s dir -t rpm -n pdns-graphite -v $(date +%s) -d bitmap-fonts -d pycairo --after-install postinst-graphite /opt/graphite/
+fpm -s dir -t rpm -n pdns-graphite -v $(date +%s) -d pycairo --after-install postinst-graphite /opt/graphite/
