@@ -5,15 +5,16 @@ pushd /opt
 git clone https://github.com/zeha/pdnscontrol.git pdnscontrol
 virtualenv /opt/pdnscontrol
 . /opt/pdnscontrol/bin/activate
-xargs -n1 pip install << __EOF__
-Flask==0.10.1
-Flask-Assets==0.8
-Flask-SQLAlchemy==0.16
-Flask-Security==1.6.7
-requests==1.2.3
-MySQL-python
-psycopg2
-__EOF__
+#xargs -n1 pip install << __EOF__
+#Flask==0.10.1
+#Flask-Assets==0.8
+#Flask-SQLAlchemy==0.16
+#Flask-Security==1.6.7
+#requests==1.2.3
+#MySQL-python
+#psycopg2
+#__EOF__
+pip install -r /opt/pdnscontrol/requirements.txt
 
 mkdir /opt/pdnscontrol/var
 ln -s ../instance /opt/pdnscontrol/var/pdnscontrol-instance
