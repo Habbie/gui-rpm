@@ -1,6 +1,7 @@
 #!/bin/sh -ex
 ntpdate ntp.xs4all.nl
-yum install -y pycairo postgresql-server postgresql-libs screen
+iptables -F INPUT
+yum install -y pycairo postgresql-server postgresql-libs screen mod_wsgi
 rpm -i --nodeps *.rpm
 service postgresql initdb
 service postgresql start
@@ -38,5 +39,33 @@ gpgsql-host=
 setuid=pdns
 __EOF__
 
+cat > /etc/powerdns/recursor.conf << __EOF__
+local-port=54
+setuid=pdns
+experimental-json-interface=yes
+__EOF__
+
+cat >> /etc/httpd/conf.d/wsgi.conf
+
+WSGIPythonHome /opt/pdnscontrol
+WSGIDaemonProcess pdnscontrol user=pdnscontrol group=pdnscontrol processes=2 threads=5
+WSGIScriptAlias / /opt/pdnscontrol/instance/pdnscontrol.wsgi
+WSGISocketPrefix /tmp
+<Directory /opt/pdnscontrol>
+        WSGIProcessGroup pdnscontrol
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+</Directory>
+
+__EOF__
+
+chown -R pdnscontrol /opt/pdnscontrol/pdnscontrol/static
+
 su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py'
+su pdnscontrol -c 'psql pdnscontrol' << __EOF__
+INSERT INTO servers (name, daemon_type, stats_url, manager_url) VALUES('localhost-auth','Authoritative','http://x:web@127.0.0.1:8081/','http://x:web@127.0.0.1:8081/');
+INSERT INTO servers (name, daemon_type, stats_url, manager_url) VALUES('localhost-rec','Recursor','http://127.0.0.1:8082/','http://127.0.0.1:8082/');
+__EOF__
+
 su graphite -c '. /opt/graphite/bin/activate ; cd /opt/graphite ; python webapp/graphite/manage.py syncdb'
