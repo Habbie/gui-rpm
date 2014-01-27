@@ -45,7 +45,7 @@ setuid=pdns
 experimental-json-interface=yes
 __EOF__
 
-cat >> /etc/httpd/conf.d/wsgi.conf
+cat >> /etc/httpd/conf.d/wsgi.conf << __EOF__
 
 WSGIPythonHome /opt/pdnscontrol
 WSGIDaemonProcess pdnscontrol user=pdnscontrol group=pdnscontrol processes=2 threads=5
