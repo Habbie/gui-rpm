@@ -1,7 +1,7 @@
 #!/bin/sh -ex
 ntpdate ntp.xs4all.nl
 iptables -F INPUT
-yum install -y pycairo postgresql-server postgresql-libs screen mod_wsgi
+yum install -y pycairo postgresql-server postgresql-libs screen bitmap-fonts mod_wsgi
 rpm -i --nodeps *.rpm
 service postgresql initdb
 service postgresql start

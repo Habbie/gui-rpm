@@ -1,0 +1,17 @@
+# thanks, https://github.com/captnswing/chef-graphite/blob/master/templates/default/carbon-cache-upstart.erb
+
+description "Graphite Carbon Cache Daemon"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+expect daemon
+respawn
+
+env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# thanks, https://bugs.launchpad.net/graphite/+bug/922809/comments/3
+script
+    ulimit -n 65000
+    exec /opt/graphite/bin/carbon-cache.py start
+end script

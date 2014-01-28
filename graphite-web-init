@@ -1,0 +1,11 @@
+# graphite-web - the graphite GUI
+
+description "graphite GUI"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+respawn
+
+exec /opt/graphite/bin/gunicorn --chdir /opt/graphite/conf -u graphite -w 5 -b :8085 --log-syslog graphite_wsgi:application
+
+#su graphite -c 'cd /opt/graphite ; bin/uwsgi --http :8085 --master --processes 4 --home /opt/graphite --pythonpath /opt/graphite/webapp/graphite --wsgi-file /opt/graphite/conf/graphite.wsgi.example'
