@@ -22,6 +22,7 @@ su postgres -c 'createdb -O pdnscontrol pdnscontrol'
 cat > /opt/pdnscontrol/instance/pdnscontrol.conf << __EOF__
 DATABASE_URI = 'postgresql://pdnscontrol@/pdnscontrol'
 GRAPHITE_SERVER = 'http://172.16.68.167:8085/render/'
+SECRET_KEY = $(python -c 'import os; print repr(os.urandom(24));')
 
 serverlist_url = 'http://127.0.0.1:5000/servers.json'
 pdnscontrol_user = 'graphite@example.org'
