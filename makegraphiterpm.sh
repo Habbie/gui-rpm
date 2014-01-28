@@ -6,6 +6,7 @@ virtualenv /opt/graphite
 xargs -n1 pip install << __EOF__
 Django==1.3
 Flask==0.9
+Twisted<12.0
 graphite-web
 carbon
 whisper
@@ -20,4 +21,4 @@ cp storage-schemas.conf.example storage-schemas.conf
 rm /opt/graphite/lib/python2.6/no-global-site-packages.txt
 
 popd
-fpm -s dir -t rpm -n pdns-graphite -v $(date +%s) -d pycairo --after-install postinst-graphite /opt/graphite/
+fpm -s dir -t rpm -n pdns-graphite -v $(date +%s) -d pycairo -d bitmap-fonts --after-install postinst-graphite /opt/graphite/
