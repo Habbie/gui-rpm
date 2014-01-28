@@ -12,5 +12,9 @@ ln -s ../instance /opt/pdnscontrol/var/pdnscontrol-instance
 
 popd
 
-chown -R pdnscontrol:pdnscontrol /opt/pdnscontrol
-fpm -s dir -t rpm -n pdns-control -v $(date +%s) -d postgresql-libs --after-install postinst-pdnscontrol /opt/pdnscontrol/
+PDIR=$(mktemp -d)
+mkdir -p ${PDIR}/opt
+mkdir -p ${PDIR}/etc/init
+rsync -a /opt/pdnscontrol/ ${PDIR}/opt/pdnscontrol/
+cp pdnscontrol-init ${PDIR}/etc/init/pdnscontrol.conf
+fpm -s dir -t rpm -C ${PDIR} -n pdns-control -v $(date +%s) -d postgresql-libs --after-install postinst-pdnscontrol .

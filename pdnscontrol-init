@@ -1,0 +1,13 @@
+# pdnscontrol - the PowerDNS web GUI
+
+description "PowerDNS control GUI"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+pre-start script
+	cd /opt/pdnscontrol
+	bin/python manage.py assets --parse-templates build
+end script
+
+exec /opt/pdnscontrol/bin/gunicorn --chdir /opt/pdnscontrol -u pdnscontrol -w 5 -b :5000 --log-syslog pdnscontrol:app
