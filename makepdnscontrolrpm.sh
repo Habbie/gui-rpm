@@ -5,7 +5,8 @@ pushd /opt
 git clone https://github.com/PowerDNS/pdnscontrol.git pdnscontrol
 virtualenv /opt/pdnscontrol
 . /opt/pdnscontrol/bin/activate
-pip install -r /opt/pdnscontrol/requirements.txt
+cat /opt/pdnscontrol/requirements.txt
+pip install --allow-external argparse -r /opt/pdnscontrol/requirements.txt
 
 mkdir /opt/pdnscontrol/var
 ln -s ../instance /opt/pdnscontrol/var/pdnscontrol-instance
