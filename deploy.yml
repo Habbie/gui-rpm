@@ -3,6 +3,10 @@
 
   vars:
   - controlsecret: "{{ lookup('password', './controlsecret.cache') }}"
+  - authrpm: pdns-static-0.0.20140214_4717_d464d8f-1.x86_64.rpm
+  - recrpm: pdns-recursor-0.0.20140214_1078_d464d8f-1.x86_64.rpm
+  - controlrpm: pdns-control-1392631006-1.x86_64.rpm
+  - graphiterpm: pdns-graphite-1392576571-1.x86_64.rpm
 
   tasks:
   - name: fix clock
@@ -19,16 +23,33 @@
 
   - name: upload RPMs
     copy: dest=/root src={{ item }}
-    with_fileglob:
-    - ./*.rpm
+    with_items:
+    - '{{ authrpm }}'
+    - '{{ recrpm }}'
+    - '{{ controlrpm }}'
+    - '{{ graphiterpm }}'
 
   - name: upload SQL schema
     copy: dest=/root src=schema.sql
 
-  - name: install pdns RPMs
-    yum: name=/root/{{ item }}
-    with_lines:
-    - ls -1 *.rpm
+  - name: install auth RPM
+    yum: name=/root/{{ authrpm }}
+    notify:
+    - restart auth
+
+  - name: install recursor RPM
+    yum: name=/root/{{ recrpm }}
+    notify:
+    - restart recursor
+
+  - name: install pdnscontrol RPM
+    yum: name=/root/{{ controlrpm }}
+
+
+  - name: install graphite RPM
+    yum: name=/root/{{ graphiterpm }}
+    notify:
+    - init graphite
 
   - name: create pdns system user
     user: name=pdns system=yes
@@ -46,9 +67,6 @@
 
   - meta: flush_handlers # to get postgres up including pdnscontrol user+db
 
-  - name: make sure postgres is running for followup tasks
-    service: name=postgresql state=started
-
   - name: configure auth
     copy: src=confs/pdns.conf dest=/etc/powerdns/pdns.conf
     notify: 
@@ -64,13 +82,9 @@
 
   - name: configure pdnscontrol
     template: src=confs/pdnscontrol.conf.j2 dest=/opt/pdnscontrol/instance/pdnscontrol.conf owner=pdnscontrol
-    notify: restart pdnscontrol
+    notify: init pdnscontrol
 
-  - name: init pdnscontrol (FIXME MAKE ONETIME)
-    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py'
-
-  - name: init graphite (FIXME MAKE ONETIME)
-    shell: su graphite -c '. /opt/graphite/bin/activate ; cd /opt/graphite ; python webapp/graphite/manage.py syncdb --noinput'
+  - meta: flush_handlers # to make sure we init pdnscontrol before starting it
 
   - name: copy addservers.sql
     copy: src=confs/addservers.sql dest=/tmp/addservers.sql mode=0644
@@ -87,9 +101,6 @@
     - graphite-web
     - pdns2graphite
     - pdnscontrol
-
-
-# add servers to pdnscontrol
 
   handlers:
   - name: init postgres
@@ -121,3 +132,10 @@
 
   - name: restart pdnscontrol
     service: name=pdnscontrol state=restarted
+
+  - name: init pdnscontrol
+    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py'
+    notify: restart pdnscontrol
+
+  - name: init graphite
+    shell: su graphite -c '. /opt/graphite/bin/activate ; cd /opt/graphite ; python webapp/graphite/manage.py syncdb --noinput'
