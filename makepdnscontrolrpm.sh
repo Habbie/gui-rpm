@@ -3,6 +3,9 @@ rm -rf /opt/pdnscontrol
 [ ! -d /opt/pdnscontrol ]
 pushd /opt
 git clone https://github.com/PowerDNS/pdnscontrol.git pdnscontrol
+pushd pdnscontrol
+GITVER=$(git describe --always --dirty=+)
+popd
 virtualenv /opt/pdnscontrol
 . /opt/pdnscontrol/bin/activate
 cat /opt/pdnscontrol/requirements.txt
@@ -19,4 +22,4 @@ mkdir -p ${PDIR}/etc/init
 rsync -a /opt/pdnscontrol/ ${PDIR}/opt/pdnscontrol/
 cp pdnscontrol-init ${PDIR}/etc/init/pdnscontrol.conf
 cp pdns2graphite-init ${PDIR}/etc/init/pdns2graphite.conf
-fpm -s dir -t rpm -C ${PDIR} -n pdns-control -v $(date +%s) -d postgresql-libs --after-install postinst-pdnscontrol .
+fpm -s dir -t rpm -C ${PDIR} -n pdns-control -v $(date +%s)-${GITVER} -d postgresql-libs --after-install postinst-pdnscontrol .
