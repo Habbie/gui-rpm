@@ -5,7 +5,7 @@
   - controlsecret: "{{ lookup('password', './controlsecret.cache') }}"
   - authrpm: pdns-static-0.0.20140214_4717_d464d8f-1.x86_64.rpm
   - recrpm: pdns-recursor-0.0.20140214_1078_d464d8f-1.x86_64.rpm
-  - controlrpm: pdns-control-1392631006-1.x86_64.rpm
+  - controlrpm: pdns-control-1392645890_70ca5ea-1.x86_64.rpm
   - graphiterpm: pdns-graphite-1392576571-1.x86_64.rpm
 
   tasks:
