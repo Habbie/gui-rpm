@@ -62,7 +62,7 @@
   - name: fix pdnscontrol static cache ownership
     shell: chown -R pdnscontrol /opt/pdnscontrol/pdnscontrol/static
 
-  - name: configure pdnscontrol (FIXME GRAPHITE URI)
+  - name: configure pdnscontrol
     template: src=confs/pdnscontrol.conf.j2 dest=/opt/pdnscontrol/instance/pdnscontrol.conf owner=pdnscontrol
     notify: restart pdnscontrol
 
