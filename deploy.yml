@@ -9,6 +9,9 @@
   - graphiterpm: pdns-graphite-1392576571-1.x86_64.rpm
 
   tasks:
+  - name: install ntpdate
+    yum: name=ntpdate
+
   - name: fix clock
     shell: ntpdate ntp.xs4all.nl
 
