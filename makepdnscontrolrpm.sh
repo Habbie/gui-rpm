@@ -18,4 +18,5 @@ mkdir -p ${PDIR}/opt
 mkdir -p ${PDIR}/etc/init
 rsync -a /opt/pdnscontrol/ ${PDIR}/opt/pdnscontrol/
 cp pdnscontrol-init ${PDIR}/etc/init/pdnscontrol.conf
+cp pdns2graphite-init ${PDIR}/etc/init/pdns2graphite.conf
 fpm -s dir -t rpm -C ${PDIR} -n pdns-control -v $(date +%s) -d postgresql-libs --after-install postinst-pdnscontrol .

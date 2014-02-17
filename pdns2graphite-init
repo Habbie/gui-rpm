@@ -1,0 +1,9 @@
+# pdns2graphite - the PowerDNS stats collector
+
+description "PowerDNS graphite feeder"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+respawn
+
+exec su pdnscontrol -c 'cd /opt/pdnscontrol/pdns2graphite ; ../bin/python pdns2graphite'
