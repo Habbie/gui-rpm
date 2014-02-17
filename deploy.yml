@@ -75,6 +75,9 @@
     notify: 
     - restart auth
 
+  - name: mkdir recursor.conf.d
+    file: dest=/etc/powerdns/recursor.conf.d mode=0750 owner=pdns state=directory
+
   - name: configure recursor
     copy: src=confs/recursor.conf dest=/etc/powerdns/recursor.conf
     notify: 
