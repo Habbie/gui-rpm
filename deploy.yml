@@ -1,0 +1,123 @@
+---
+- hosts: c6deploy
+
+  vars:
+  - controlsecret: "{{ lookup('password', './controlsecret.cache') }}"
+
+  tasks:
+  - name: fix clock
+    shell: ntpdate ntp.xs4all.nl
+
+  - name: disarm iptables
+    shell: iptables -F INPUT
+
+  - name: install selinux python bindings (Ansible needs these)
+    yum: name=libselinux-python
+
+  - name: install dig
+    yum: name=bind-utils
+
+  - name: upload RPMs
+    copy: dest=/root src={{ item }}
+    with_fileglob:
+    - ./*.rpm
+
+  - name: upload SQL schema
+    copy: dest=/root src=schema.sql
+
+  - name: install pdns RPMs
+    yum: name=/root/{{ item }}
+    with_lines:
+    - ls -1 *.rpm
+
+  - name: create pdns system user
+    user: name=pdns system=yes
+
+  - name: install postgres
+    yum: name=postgresql-server
+    notify:
+    - init postgres
+    - start and enable postgres
+    - create pdns postgres user
+    - create pdns postgres db
+    - init pdns postgres schema
+    - create pdnscontrol postgres user
+    - create pdnscontrol postgres db
+
+  - meta: flush_handlers # to get postgres up including pdnscontrol user+db
+
+  - name: make sure postgres is running for followup tasks
+    service: name=postgresql state=started
+
+  - name: configure auth
+    copy: src=confs/pdns.conf dest=/etc/powerdns/pdns.conf
+    notify: 
+    - restart auth
+
+  - name: configure recursor
+    copy: src=confs/recursor.conf dest=/etc/powerdns/recursor.conf
+    notify: 
+    - restart recursor
+
+  - name: fix pdnscontrol static cache ownership
+    shell: chown -R pdnscontrol /opt/pdnscontrol/pdnscontrol/static
+
+  - name: configure pdnscontrol (FIXME GRAPHITE URI)
+    template: src=confs/pdnscontrol.conf.j2 dest=/opt/pdnscontrol/instance/pdnscontrol.conf owner=pdnscontrol
+    notify: restart pdnscontrol
+
+  - name: init pdnscontrol (FIXME MAKE ONETIME)
+    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py'
+
+  - name: init graphite (FIXME MAKE ONETIME)
+    shell: su graphite -c '. /opt/graphite/bin/activate ; cd /opt/graphite ; python webapp/graphite/manage.py syncdb --noinput'
+
+  - name: copy addservers.sql
+    copy: src=confs/addservers.sql dest=/tmp/addservers.sql mode=0644
+
+  - name: add servers to pdnscontrol
+    shell: su pdnscontrol -c 'psql pdnscontrol < /tmp/addservers.sql'
+
+  - name: start daemons # enable is broken for ansible vs. upstart
+    service: name={{ item }} state=started
+    with_items:
+    - pdns
+    - pdns-recursor
+    - graphite-carbon-cache
+    - graphite-web
+    - pdns2graphite
+    - pdnscontrol
+
+
+# add servers to pdnscontrol
+
+  handlers:
+  - name: init postgres
+    shell: service postgresql initdb
+
+  - name: start and enable postgres
+    service: name=postgresql enabled=yes state=started
+
+  - name: create pdns postgres user
+    shell: su postgres -c 'createuser -D -R -S pdns'
+
+  - name: create pdns postgres db
+    shell: su postgres -c 'createdb -O pdns pdns'
+
+  - name: init pdns postgres schema
+    shell: su pdns -c 'psql pdns' < schema.sql
+
+  - name: create pdnscontrol postgres user
+    shell: su postgres -c 'createuser -D -R -S pdnscontrol'
+
+  - name: create pdnscontrol postgres db
+    shell: su postgres -c 'createdb -O pdnscontrol pdnscontrol'
+
+  - name: restart auth
+    service: name=pdns state=restarted
+
+  - name: restart recursor
+    service: name=pdns-recursor state=restarted
+
+  - name: restart pdnscontrol
+    service: name=pdnscontrol state=restarted

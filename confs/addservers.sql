@@ -1,0 +1,2 @@
+INSERT INTO servers (name, daemon_type, stats_url, manager_url) VALUES('localhost-auth','Authoritative','http://x:web@127.0.0.1:8081/','http://x:web@127.0.0.1:8081/');
+INSERT INTO servers (name, daemon_type, stats_url, manager_url) VALUES('localhost-rec','Recursor','http://127.0.0.1:8082/','http://127.0.0.1:8082/');
