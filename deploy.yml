@@ -1,5 +1,5 @@
 ---
-- hosts: c6deploy
+- hosts: all
 
   vars:
   - controlsecret: "{{ lookup('password', './controlsecret.cache') }}"
