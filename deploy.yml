@@ -3,9 +3,10 @@
 
   vars:
   - controlsecret: "{{ lookup('password', './controlsecret.cache') }}"
-  - authrpm: pdns-static-0.0.20140214_4717_d464d8f-1.x86_64.rpm
-  - recrpm: pdns-recursor-0.0.20140214_1078_d464d8f-1.x86_64.rpm
-  - controlrpm: pdns-control-1392740922_f001ca8-1.x86_64.rpm
+  - controlsalt: "{{ lookup('password', './controlsalt.cache') }}"
+  - authrpm: pdns-static-0.0.20140218_4722_a6290c2-1.x86_64.rpm
+  - recrpm: pdns-recursor-0.0.20140218_1083_a6290c2-1.x86_64.rpm
+  - controlrpm: pdns-control-1392887245_07a899f-1.x86_64.rpm
   - graphiterpm: pdns-graphite-1392576571-1.x86_64.rpm
 
   tasks:
@@ -47,7 +48,7 @@
 
   - name: install pdnscontrol RPM
     yum: name=/root/{{ controlrpm }}
-
+    notify: restart pdnscontrol
 
   - name: install graphite RPM
     yum: name=/root/{{ graphiterpm }}
@@ -140,7 +141,7 @@
     service: name=pdnscontrol state=restarted
 
   - name: init pdnscontrol
-    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py'
+    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py || true'
     notify: restart pdnscontrol
 
   - name: init graphite
@@ -153,3 +154,6 @@
 # bind various services to localhost only
 # add pdnsmgrd
 # add SSL on (semi)public interfaces, using nginx/lighttpd or pdnsmgrd
+# move pdnscontrol asset generation to fpm/rpmbuild stage
+# configure graphite to retain more than 1d of data
+# migrate password storage to hashed
