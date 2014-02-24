@@ -155,6 +155,6 @@
 # add pdnsmgrd
 # add SSL on (semi)public interfaces, using nginx/lighttpd or pdnsmgrd
 # move pdnscontrol asset generation to fpm/rpmbuild stage
-# configure graphite to retain more than 1d of data
+# configure graphite to retain 356days; aggregation?
 # migrate password storage to hashed
 # deal with /var/log/messages being 0600
