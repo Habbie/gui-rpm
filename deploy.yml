@@ -158,3 +158,4 @@
 # configure graphite to retain 356days; aggregation?
 # migrate password storage to hashed
 # deal with /var/log/messages being 0600
+# perl -p -i  -e 's/\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat/#\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat/' /etc/rsyslog.conf
