@@ -8,7 +8,6 @@ GITVER=$(git describe --always --dirty=+)
 popd
 virtualenv /opt/pdnscontrol
 . /opt/pdnscontrol/bin/activate
-cat /opt/pdnscontrol/requirements.txt
 pip install --allow-external argparse -r /opt/pdnscontrol/requirements.txt
 
 mkdir /opt/pdnscontrol/var
