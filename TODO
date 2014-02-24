@@ -1,2 +1,3 @@
 - don't package .git
 - init scripts (including initdb tasks)
+- fix 'restart graphite-carbon-cache'
