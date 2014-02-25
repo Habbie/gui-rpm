@@ -99,7 +99,7 @@
   - name: add servers to pdnscontrol
     shell: su pdnscontrol -c 'psql pdnscontrol < /tmp/addservers.sql'
 
-  - name: start daemons # enable is broken for ansible vs. upstart
+  - name: start daemons
     service: name={{ item }} state=started
     with_items:
     - pdns
@@ -108,6 +108,16 @@
     - graphite-web
     - pdns2graphite
     - pdnscontrol
+
+  - name: enable non-upstart daemons
+    service: name={{ item }} enabled=yes
+    with_items:
+    - pdns
+    - pdns-recursor
+
+  - name: fix rsyslog rsyslog format
+    lineinfile: dest=/etc/rsyslog.conf regexp='\\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat' state=absent
+    notify: restart rsyslog
 
   handlers:
   - name: init postgres
@@ -141,14 +151,16 @@
     service: name=pdnscontrol state=restarted
 
   - name: init pdnscontrol
-    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py || true'
+    shell: su pdnscontrol -c '. /opt/pdnscontrol/bin/activate ; cd /opt/pdnscontrol/instance ; python install.py --existing-ok'
     notify: restart pdnscontrol
 
   - name: init graphite
     shell: su graphite -c '. /opt/graphite/bin/activate ; cd /opt/graphite ; python webapp/graphite/manage.py syncdb --noinput'
 
+  - name: restart rsyslog
+    service: name=rsyslog state=restarted
+
 # TODO:
-# enable auth and recursor services
 # fix timezone (/opt/graphite/webapp/graphite/local_settings.py)
 # fix graphite-carbon-cache service restarts
 # bind various services to localhost only
@@ -158,4 +170,3 @@
 # configure graphite to retain 356days; aggregation?
 # migrate password storage to hashed
 # deal with /var/log/messages being 0600
-# perl -p -i  -e 's/\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat/#\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat/' /etc/rsyslog.conf
