@@ -6,7 +6,7 @@
   - controlsalt: "{{ lookup('password', './controlsalt.cache') }}"
   - authrpm: pdns-static-0.0.20140218_4722_a6290c2-1.x86_64.rpm
   - recrpm: pdns-recursor-0.0.20140218_1083_a6290c2-1.x86_64.rpm
-  - controlrpm: pdns-control-1392887245_07a899f-1.x86_64.rpm
+  - controlrpm: pdns-control-1393321909_5c528ae-1.x86_64.rpm
   - graphiterpm: pdns-graphite-1392576571-1.x86_64.rpm
 
   tasks:
