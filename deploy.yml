@@ -48,7 +48,7 @@
 
   - name: install pdnscontrol RPM
     yum: name=/root/{{ controlrpm }}
-    notify: restart pdnscontrol
+    # notify: restart pdnscontrol # FIXME this breaks first setup
 
   - name: install graphite RPM
     yum: name=/root/{{ graphiterpm }}
