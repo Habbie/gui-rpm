@@ -11,7 +11,7 @@ graphite-web
 carbon
 whisper
 gunicorn
-django-tagging
+django-tagging==0.3.1
 requests
 __EOF__
 
@@ -26,8 +26,10 @@ popd
 PDIR=$(mktemp -d)
 mkdir -p ${PDIR}/opt
 mkdir -p ${PDIR}/etc/init
+mkdir -p ${PDIR}/etc/init.d
 rsync -a /opt/graphite/ ${PDIR}/opt/graphite/
-cp graphite-carbon-cache-init ${PDIR}/etc/init/graphite-carbon-cache.conf
+cp graphite-carbon-cache.init ${PDIR}/etc/init.d/graphite-carbon-cache
+chmod +x ${PDIR}/etc/init.d/graphite-carbon-cache
 cp graphite-web-init ${PDIR}/etc/init/graphite-web.conf
 
 fpm -s dir -t rpm -C ${PDIR} -n pdns-graphite -v $(date +%s) -d pycairo -d bitmap-fonts --after-install postinst-graphite .
