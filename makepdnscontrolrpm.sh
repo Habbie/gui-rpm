@@ -20,6 +20,7 @@ mkdir -p ${PDIR}/opt
 mkdir -p ${PDIR}/etc/init
 rsync -a /opt/pdnscontrol/ ${PDIR}/opt/pdnscontrol/
 cp pdnscontrol-init ${PDIR}/etc/init/pdnscontrol.conf
+cp pdnsmgrd-init ${PDIR}/etc/init/pdnsmgrd.conf
 cp pdns2graphite-init ${PDIR}/etc/init/pdns2graphite.conf
-fpm -s dir -t rpm -C ${PDIR} -x opt/pdnscontrol/pdnsmgrd -n pdns-control -v $(date +%s)-${GITVER} -d postgresql-libs --after-install postinst-pdnscontrol .
-fpm -s dir -t rpm -C ${PDIR} -n pdns-mgrd -v $(date +%s)-${GITVER} opt/pdnscontrol/pdnsmgrd
+fpm -s dir -t rpm -C ${PDIR} -x opt/pdnscontrol/pdnsmgrd -x etc/init/pdnsmgrd.conf -n pdns-control -v $(date +%s)-${GITVER} -d postgresql-libs --after-install postinst-pdnscontrol .
+fpm -s dir -t rpm -C ${PDIR} -n pdns-mgrd -v $(date +%s)-${GITVER} opt/pdnscontrol/pdnsmgrd etc/init/pdnsmgrd.conf

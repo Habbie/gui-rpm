@@ -1,0 +1,9 @@
+# pdnsmgrd - the PowerDNS management daemon
+
+description "PowerDNS management daemon"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+respawn
+
+exec /opt/pdnscontrol/pdnsmgrd/pdnsmgrd
